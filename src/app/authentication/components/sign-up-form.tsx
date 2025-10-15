@@ -22,12 +22,23 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-const formSchema = z.object({
-  name: z.string().min(3, "Nome inválido"),
-  email: z.email("Email inválido"),
-  password: z.string().min(8, "Senha inválida"),
-  passwordConfirmation: z.string().min(8, "Senha inválida"),
-});
+const formSchema = z
+  .object({
+    name: z.string().min(3, "Nome inválido").trim().min(1, "Nome inválido"),
+    email: z.email("Email inválido"),
+    password: z.string().min(8, "Senha inválida"),
+    passwordConfirmation: z.string().min(8, "Senha inválida"),
+  })
+  .refine(
+    (data) => {
+      return data.password === data.passwordConfirmation;
+    },
+    {
+      message: "As senhas não coincidem",
+      path: ["passwordConfirmation"],
+    }
+  );
+
 type FormSchema = z.infer<typeof formSchema>;
 const SignUpForm = () => {
   const form = useForm<FormSchema>({
@@ -50,7 +61,7 @@ const SignUpForm = () => {
       <Card>
         <CardHeader>
           <CardTitle>Criar conta</CardTitle>
-          <CardDescription>Faça login para continuar</CardDescription>
+          <CardDescription>Crie uma conta para continuar</CardDescription>
         </CardHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -68,9 +79,7 @@ const SignUpForm = () => {
                         {...field}
                       />
                     </FormControl>
-                    <FormDescription>
-                      Digite seu email para continuar
-                    </FormDescription>
+
                     <FormMessage />
                   </FormItem>
                 )}
@@ -88,16 +97,14 @@ const SignUpForm = () => {
                         {...field}
                       />
                     </FormControl>
-                    <FormDescription>
-                      Digite sua senha para continuar
-                    </FormDescription>
+
                     <FormMessage />
                   </FormItem>
                 )}
               />
               <FormField
                 control={form.control}
-                name="password"
+                name="passwordConfirmation"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Confirmar senha</FormLabel>
@@ -108,9 +115,7 @@ const SignUpForm = () => {
                         {...field}
                       />
                     </FormControl>
-                    <FormDescription>
-                      Digite sua senha novamente
-                    </FormDescription>
+
                     <FormMessage />
                   </FormItem>
                 )}
