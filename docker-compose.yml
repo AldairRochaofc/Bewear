@@ -1,0 +1,18 @@
+# Docker Compose for Local PostgreSQL
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: bewear-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: bewear
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
